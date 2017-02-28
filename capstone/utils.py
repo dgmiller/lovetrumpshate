@@ -81,7 +81,7 @@ class TwitterCorpus(object):
         end = time.time()
         print("Time: %s" % (end-start))
         
-    def clean_text(self,remove_vars_from_tweet=True):
+    def clean_text(self,remove_vars_from_tweet=False,remove_retweets=True):
         """
         Cleans the text and extracts information from the tweet
         """
@@ -94,7 +94,7 @@ class TwitterCorpus(object):
             m_str = ""
             h_str = ""
             s = s.replace('"""','')
-            s = s.replace("'","")
+            #s = s.replace("'","")
             s = s.lower()
             mentions = re.findall(r'@\w*',s)
             hashtags = re.findall(r'#\w*',s)
@@ -125,7 +125,11 @@ class TwitterCorpus(object):
         self.hashtags = u_h
         self.u_mentions = np.unique(u_m)
         self.u_hashtags = np.unique(u_h)
-        self.tweets = tweetwords
+        if remove_retweets:
+            no_rt = np.array(self.retweets) - np.ones_like(self.retweets)
+            self.tweets = [tweetwords[i] for i in np.nonzero(no_rt)[0]]
+        else:
+            self.tweets = tweetwords
         end = time.time()
         print("Time: %s" % (end-start))
         
