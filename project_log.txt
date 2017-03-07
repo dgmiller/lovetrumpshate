@@ -6,5 +6,18 @@ K: Koa's notes
 === 7 March ===
 
 --- D ---
+
 Things to think about: clustering, naive bayes filtering, lda feature engineering
+
+Ran nltk's vader sentiment package on 100 tweets from election night.
+Selecting tweets with a nonzero negative score gave only 9/100.
+Selecting tweets with nonzero negative score and a positive score of zero gave 6/100.
+
+Adding tweets with nonzero positive score and a negative score of zero gave 12/100.
+
+30 second elevator pitch: We are using election day tweets to predict how negative Twitter will be on inauguration day.
+When we have tuned our algorithm, we want to make it work online in real time. #PresidentialHedonometer
+
 ---d---
+
+=== END ===
