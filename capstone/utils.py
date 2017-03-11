@@ -3,6 +3,7 @@ from scipy.sparse import csr_matrix
 from sklearn.preprocessing import normalize
 from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer as Vec
 from sklearn.decomposition import LatentDirichletAllocation as LDA
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import numpy as np
 import pandas as pd
 import string
@@ -81,7 +82,7 @@ class TwitterCorpus(object):
         end = time.time()
         print("Time: %s" % (end-start))
         
-    def clean_text(self,remove_vars_from_tweet=False,remove_retweets=True):
+    def clean_text(self,remove_retweets=True):
         """
         Cleans the text and extracts information from the tweet
         """
@@ -95,11 +96,11 @@ class TwitterCorpus(object):
             h_str = ""
             s = s.replace('"""','')
             #s = s.replace("'","")
-            s = s.lower()
+            #s = s.lower()
             mentions = re.findall(r'@\w*',s)
             hashtags = re.findall(r'#\w*',s)
             weblinks = re.findall(r'http\S*',s)
-            retweets = re.findall('^rt ',s)
+            retweets = re.findall('^RT ',s)
             numbers = re.findall(r'[0-9]+',s)
             self.n_mentions.append(len(mentions))
             self.n_hashtags.append(len(hashtags))
@@ -109,27 +110,17 @@ class TwitterCorpus(object):
                 u_m.append(m)
             for h in hashtags:
                 u_h.append(h)
-            if remove_vars_from_tweet:
-                for m in mentions:
-                    s = s.replace(m,'')
-                for h in hashtags:
-                    s = s.replace(h,'')
-                for w in weblinks:
-                    s = s.replace(w,'')
-                for r in retweets:
-                    s = s.replace(r,'')
-                for n in numbers:
-                    s = s.replace(n,'')
             tweetwords.append(s)
         self.mentions = u_m
         self.hashtags = u_h
         self.u_mentions = np.unique(u_m)
         self.u_hashtags = np.unique(u_h)
-        if remove_retweets:
-            no_rt = np.array(self.retweets) - np.ones_like(self.retweets)
-            self.tweets = [tweetwords[i] for i in np.nonzero(no_rt)[0]]
-        else:
-            self.tweets = tweetwords
+        #if remove_retweets:
+        #    no_rt = np.array(self.retweets) - np.ones_like(self.retweets)
+        #    self.tweets = [tweetwords[i] for i in np.nonzero(no_rt)[0]]
+        #else:
+        #    self.tweets = tweetwords
+        self.tweets = tweetwords
         end = time.time()
         print("Time: %s" % (end-start))
         
@@ -158,6 +149,23 @@ class TwitterCorpus(object):
         self.time = np.array(self.time)
         end = time.time()
         print("Time: %s" % (end-start))
+        
+    def get_sentiment(self):
+        """
+        How do these tweets make you feel? Sentiment scores from nltk.
+        RETURNS
+            neg,pos,comp (arrays) negative, positive, and compound sentiment scores
+        """
+        neg = []
+        pos = []
+        comp = []
+        S = SentimentIntensityAnalyzer()
+        for tweet in self.tweets:
+            S_ = S.polarity_scores(tweet)
+            neg.append(S_['neg'])
+            pos.append(S_['pos'])
+            comp.append(S_['compound'])
+        return neg,pos,comp
 
     def make_df(self,time_index=False):
         """
@@ -167,6 +175,7 @@ class TwitterCorpus(object):
         RETURNS
             df (pandas DataFrame) of twitter data
         """
+        start = time.time()
         if time_index:
             df = pd.DataFrame(index=self.time)
         else:
@@ -179,36 +188,14 @@ class TwitterCorpus(object):
         df['n_mentions'] = self.n_mentions
         df['n_hashtags'] = self.n_hashtags
         df['RT'] = self.retweets
+        neg,pos,comp = self.get_sentiment()
+        df['neg'] = neg
+        df['pos'] = pos
+        df['compound'] = comp
+        df['text'] = self.tweets
+        end = time.time()
+        print("Time: %s" % (end-start))
         return df
-    
-    def tokenize_hashtags(self):
-        """
-        Tokenize the hashtags using TfidfVectorizer
-        """
-        start = time.time()
-        self.V = Vec(max_features=100,
-                     min_df=100,
-                     max_df=.95,
-                     sublinear_tf=True,
-                     use_idf=True)
-        H = self.V.fit_transform(self.hashtags)
-        end = time.time()
-        print("Time: %s" % (end-start))
-        return H
-    
-    def tokenize_mentions(self):
-        """
-        Tokenize mentions using TfidfVectorizer
-        RETURNS
-            M (TfidfVectorizer) fitted to mentions data, parameters sublinear_tf=True and use_idf=True
-        """
-        start = time.time()
-        self.V = Vec(sublinear_tf=True,
-                     use_idf=True)
-        M = self.V.fit_transform(self.mentions)
-        end = time.time()
-        print("Time: %s" % (end-start))
-        return M
         
     def get_topics(self,n_topics=3,n_features=1000,ngram=(4,6),n_top_words=1):
         """
