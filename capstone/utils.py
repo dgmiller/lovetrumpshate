@@ -157,15 +157,17 @@ class TwitterCorpus(object):
             neg,pos,comp (arrays) negative, positive, and compound sentiment scores
         """
         neg = []
+        neu = []
         pos = []
         comp = []
         S = SentimentIntensityAnalyzer()
         for tweet in self.tweets:
             S_ = S.polarity_scores(tweet)
             neg.append(S_['neg'])
+            neu.append(S_['neu'])
             pos.append(S_['pos'])
             comp.append(S_['compound'])
-        return neg,pos,comp
+        return neg,neu,pos,comp
 
     def make_df(self,time_index=False):
         """
@@ -188,10 +190,11 @@ class TwitterCorpus(object):
         df['n_mentions'] = self.n_mentions
         df['n_hashtags'] = self.n_hashtags
         df['RT'] = self.retweets
-        neg,pos,comp = self.get_sentiment()
+        neg,neu,pos,comp = self.get_sentiment()
         df['neg'] = neg
+        df['neu'] = neu
         df['pos'] = pos
-        df['compound'] = comp
+        df['comp'] = comp
         df['text'] = self.tweets
         end = time.time()
         print("Time: %s" % (end-start))
@@ -219,7 +222,7 @@ class TwitterCorpus(object):
 
 def load_candidate(n=0,m=-1000):
     """
-    Trump: (1284126,)
+    Trump: (1284126,) <- I think this excludes everything before election night
     Clinton: (,)
     """
     filename = get_file()

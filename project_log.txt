@@ -36,6 +36,7 @@ As a reminder, all these functions are still in my portfolio/capstone repo on Gi
 Success! I got the sentiment scores into columns in utils.TwitterCorpus.make_df!
 
 Running on all of Trump.txt
+It worked!
 
 --- d ---
 
