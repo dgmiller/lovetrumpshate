@@ -95,8 +95,6 @@ class TwitterCorpus(object):
             m_str = ""
             h_str = ""
             s = s.replace('"""','')
-            #s = s.replace("'","")
-            #s = s.lower()
             mentions = re.findall(r'@\w*',s)
             hashtags = re.findall(r'#\w*',s)
             weblinks = re.findall(r'http\S*',s)
@@ -115,11 +113,6 @@ class TwitterCorpus(object):
         self.hashtags = u_h
         self.u_mentions = np.unique(u_m)
         self.u_hashtags = np.unique(u_h)
-        #if remove_retweets:
-        #    no_rt = np.array(self.retweets) - np.ones_like(self.retweets)
-        #    self.tweets = [tweetwords[i] for i in np.nonzero(no_rt)[0]]
-        #else:
-        #    self.tweets = tweetwords
         self.tweets = tweetwords
         end = time.time()
         print("Time: %s" % (end-start))
@@ -177,6 +170,7 @@ class TwitterCorpus(object):
         RETURNS
             df (pandas DataFrame) of twitter data
         """
+        print("Creating DataFrame...")
         start = time.time()
         if time_index:
             df = pd.DataFrame(index=self.time)
@@ -231,4 +225,20 @@ def load_candidate(n=0,m=-1000):
     c.convert_time()
     return c
 
+def make_train_test(n=None,m=None):
+    """
+    Returns dataframe with prepared data for machine learning.
+    INPUT
+        n (int) index to start at, default=None
+        m (int) index to end on, default=None
+    OUTPUT
+        T
+    """
+    filename = get_file()
+    c = TwitterCorpus(filename,n,m)
+    c.cleantext()
+    c.convert_time()
+    df = c.make_df()
+    T = df[df['RT']==0]
+    T = T[((T['pos']==0) & (T['neg']>0)) | ((T['neg']==0) & (T['pos']>0))]
 

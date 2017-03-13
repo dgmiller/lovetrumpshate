@@ -41,3 +41,26 @@ It worked!
 --- d ---
 
 === END ===
+
+
+
+=== 13 March ===
+
+--- D ---
+
+Starting intial data visualizations. I want text visualization but that might be too much for what we need to do right now.
+
+Things I want to visualize:
+-Basic histograms of most of the variables
+-See distribution of sentiment
+-Visualize retweet subset
+
+segment by tweet vs retweet
+        by day or time
+        by positive vs negative
+        
+Finished with a decent dataset where there are only extreme sentiments.
+
+--- d ---
+
+=== END ===
