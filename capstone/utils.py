@@ -12,17 +12,21 @@ import datetime
 import time
 from matplotlib import pyplot as plt
 
-trumplab = '/run/media/derekgm@byu.local/FAMHIST/Data/final_project/trump.txt'
-clintonlab = '/run/media/derekgm@byu.local/FAMHIST/Data/final_project/clinton.txt'
-trumpmint = '/media/derek/FAMHIST/Data/final_project/trump.txt'
-clintonmint = '/media/derek/FAMHIST/Data/final_project/clinton.txt'
+# filepaths of corresponding OS
+labloc = '/run/media/derekgm@byu.local/FAMHIST/Data/final_project/'
+mintloc = '/media/derek/FAMHIST/Data/final_project/'
+# filenames
+trumplab = labloc + 'trump.txt'
+clintonlab = labloc + 'cleantrump.txt'
+trumpmint = mintloc + 'trump.txt'
+clintonmint = mintloc + 'cleantrump.txt'
 
 def get_file():
     print("""\n\tOptions\n
             1: trump from lab computer\n
             2: trump from linux mint\n
-            3: clinton from lab computer\n
-            4: clinton from linux mint\n\n""")
+            3: clean trump from lab computer\n
+            4: clean trump from linux mint\n\n""")
     name = raw_input("Enter number >> ")
     if name == "1":
         return trumplab
@@ -65,7 +69,7 @@ class TwitterCorpus(object):
                 # number of followers, statuses, and friends
                 self.user_stats.append([float(j) for j in line[1:-1]])
                 # time that the tweet was sent
-                self.timestamps.append(float(line[0][:10]))
+                self.timestamps.append(int(line[0]))
                 # content of the tweet
                 self.tweets.append(line[-1])
             except:
@@ -73,7 +77,7 @@ class TwitterCorpus(object):
                 err += 1
         print "Errors: " + str(err)
         # convert to numpy array
-        self.timestamps = np.array(self.timestamps)
+        # self.timestamps = np.array(self.timestamps)
         self.user_stats = np.array(self.user_stats)
         self.n_mentions = []
         self.n_hashtags = []
@@ -136,10 +140,7 @@ class TwitterCorpus(object):
         """
         print("Converting time to datetime object...")
         start = time.time()
-        for t in self.timestamps:
-            d = datetime.datetime.fromtimestamp(t)
-            self.time.append(d)
-        self.time = np.array(self.time)
+        self.time = pd.to_datetime(self.timestamps,unit='ms')
         end = time.time()
         print("Time: %s" % (end-start))
         
@@ -162,7 +163,7 @@ class TwitterCorpus(object):
             comp.append(S_['compound'])
         return neg,neu,pos,comp
 
-    def make_df(self,time_index=False):
+    def make_df(self,time_index=True):
         """
         Creates a dataframe of the twitter data
         INPUT
@@ -177,6 +178,7 @@ class TwitterCorpus(object):
         else:
             df = pd.DataFrame()
             df['time'] = self.time
+        df['ts'] = self.timestamps
         df['usr_fol'] = self.user_stats[:,0]
         df['usr_n_stat'] = self.user_stats[:,1]
         df['usr_fri'] = self.user_stats[:,2]
@@ -193,52 +195,25 @@ class TwitterCorpus(object):
         end = time.time()
         print("Time: %s" % (end-start))
         return df
-        
-    def get_topics(self,n_topics=3,n_features=1000,ngram=(4,6),n_top_words=1):
-        """
-        Use LDA for topic extraction
-        """
-        def print_top_words(model, feature_names, n_top_words=1):
-            for topic_idx, topic in enumerate(model.components_):
-                print("Topic #%d:" % topic_idx)
-                print(" ".join([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]]))
-            print()
-        start = time.time()
-        TFvec = CountVectorizer(max_df=0.95, min_df=2, ngram_range=ngram, max_features=n_features, stop_words='english')
-        tf = TFvec.fit_transform(self.tweets)
-        lda = LDA(n_topics=n_topics, learning_offset=50., random_state=0)
-        lda.fit(tf)
-        tf_feature_names = TFvec.get_feature_names()
-        print("Time: %s" % (time.time() - start))
-        print_top_words(lda, tf_feature_names)
-        #print "\n\n\n",TFvec.get_feature_names()
 
-
-def load_candidate(n=0,m=-1000):
+def make_train_test(n=None,m=None):
     """
-    Trump: (1284126,) <- I think this excludes everything before election night
-    Clinton: (,)
+    Returns two dataframes with prepared data for machine learning.
+    INPUT
+        n (int) index to start at, default=None
+        m (int) index to end on, default=None
+    OUTPUT
+        df (dataframe) full dataframe with cleaned text
+        T (dataframe) subset of df where retweets are removed pos and neg columns combined
     """
     filename = get_file()
     c = TwitterCorpus(filename,n,m)
     c.clean_text()
     c.convert_time()
-    return c
-
-def make_train_test(n=None,m=None):
-    """
-    Returns dataframe with prepared data for machine learning.
-    INPUT
-        n (int) index to start at, default=None
-        m (int) index to end on, default=None
-    OUTPUT
-        T
-    """
-    filename = get_file()
-    c = TwitterCorpus(filename,n,m)
-    c.cleantext()
-    c.convert_time()
     df = c.make_df()
     T = df[df['RT']==0]
     T = T[((T['pos']==0) & (T['neg']>0)) | ((T['neg']==0) & (T['pos']>0))]
+    T['pos-neg'] = T['pos'] - T['neg']
+    T.drop(['neg','pos','RT'],axis=1,inplace=True)
+    return c,df,T
 

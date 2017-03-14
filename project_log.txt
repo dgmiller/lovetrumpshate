@@ -3,40 +3,13 @@ KEY
 D: Derek's notes
 K: Koa's notes
 
-
-
-=== 7 March ===
+=== 14 March ===
 
 --- D ---
 
-Things to think about: clustering, naive bayes filtering, lda feature engineering
-
-Ran nltk's vader sentiment package on 100 tweets from election night.
-Selecting tweets with a nonzero negative score gave only 9/100.
-Selecting tweets with nonzero negative score and a positive score of zero gave 6/100.
-
-Adding tweets with nonzero positive score and a negative score of zero gave 12/100.
-
-30 second elevator pitch: We are using election day tweets to predict how negative Twitter will be on inauguration day.
-When we have tuned our algorithm, we want to make it work online in real time. #PresidentialHedonometer
-
----d---
-
-=== END ===
-
-
-
-=== 10 March ===
-
---- D ---
-
-Adding sentiment as the outcome variable. Deleted remove_vars_from_tweet keyword in utils. Also removed tokenize functions.
-As a reminder, all these functions are still in my portfolio/capstone repo on GitHub.
-
-Success! I got the sentiment scores into columns in utils.TwitterCorpus.make_df!
-
-Running on all of Trump.txt
-It worked!
+Get plots for the various days leading up to the election.
+Link to working with datetime index http://pandas.pydata.org/pandas-docs/stable/timeseries.html
+Modified the make_test_train function in utils.py; completes the loading process from start to finish.
 
 --- d ---
 
@@ -64,3 +37,48 @@ Finished with a decent dataset where there are only extreme sentiments.
 --- d ---
 
 === END ===
+
+
+
+=== 10 March ===
+
+--- D ---
+
+Adding sentiment as the outcome variable. Deleted remove_vars_from_tweet keyword in utils. Also removed tokenize functions.
+As a reminder, all these functions are still in my portfolio/capstone repo on GitHub.
+
+Success! I got the sentiment scores into columns in utils.TwitterCorpus.make_df!
+
+Running on all of Trump.txt
+It worked!
+
+--- d ---
+
+=== END ===
+
+
+
+=== 7 March ===
+
+--- D ---
+
+Things to think about: clustering, naive bayes filtering, lda feature engineering
+
+Ran nltk's vader sentiment package on 100 tweets from election night.
+Selecting tweets with a nonzero negative score gave only 9/100.
+Selecting tweets with nonzero negative score and a positive score of zero gave 6/100.
+
+Adding tweets with nonzero positive score and a negative score of zero gave 12/100.
+
+30 second elevator pitch: We are using election day tweets to predict how negative Twitter will be on inauguration day.
+When we have tuned our algorithm, we want to make it work online in real time. #PresidentialHedonometer
+
+---d---
+
+=== END ===
+
+
+
+
+
+
