@@ -19,7 +19,7 @@ mintloc = '/media/derek/FAMHIST/Data/final_project/'
 trumplab = labloc + 'trump.txt'
 clintonlab = labloc + 'cleantrump.txt'
 trumpmint = mintloc + 'trump.txt'
-clintonmint = mintloc + 'cleantrump.txt'
+clintonmint = mintloc + 'cleantrump.csv'
 
 def get_file():
     print("""\n\tOptions\n
@@ -140,7 +140,7 @@ class TwitterCorpus(object):
         """
         print("Converting time to datetime object...")
         start = time.time()
-        self.time = pd.to_datetime(self.timestamps,unit='ms')
+        self.time = pd.to_datetime(self.timestamps,unit='ms') - pd.DateOffset(hours=7)
         end = time.time()
         print("Time: %s" % (end-start))
         

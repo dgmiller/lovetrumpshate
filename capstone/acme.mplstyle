@@ -1,0 +1,36 @@
+### ACME-style graphics
+
+##Font
+font.family : monospace
+
+## Text
+text.color : DarkSlateGrey
+
+## Patches: use if matplotlib version < 2.0
+patch.linewidth : .1
+patch.edgecolor : lightgrey
+
+## Axes
+#axes.facecolor : .98
+axes.edgecolor : grey
+axes.spines.top : False
+axes.spines.right : False
+axes.spines.left : False
+axes.spines.bottom: False
+axes.labelcolor : darkgrey
+axes.labelpad : 12.0
+axes.prop_cycle : cycler('color', ['191970','ff7f50','ffa500','3cb371'])
+axes.titlesize : xx-large
+axes.titlepad : 24.0
+
+## Ticks
+xtick.color : grey
+ytick.color : grey
+
+## Lines
+lines.linewidth : 3
+lines.markeredgewidth : 0
+
+## Figure
+figure.titlesize : large
+figure.figsize : 10, 6
