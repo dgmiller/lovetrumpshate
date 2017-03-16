@@ -17,7 +17,7 @@ labloc = '/run/media/derekgm@byu.local/FAMHIST/Data/final_project/'
 mintloc = '/media/derek/FAMHIST/Data/final_project/'
 # filenames
 trumplab = labloc + 'trump.txt'
-clintonlab = labloc + 'cleantrump.txt'
+clintonlab = labloc + 'cleantrump.csv'
 trumpmint = mintloc + 'trump.txt'
 clintonmint = mintloc + 'cleantrump.csv'
 

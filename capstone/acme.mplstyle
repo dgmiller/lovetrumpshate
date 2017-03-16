@@ -7,7 +7,7 @@ font.family : monospace
 text.color : DarkSlateGrey
 
 ## Patches: use if matplotlib version < 2.0
-patch.linewidth : .1
+patch.linewidth : 0
 patch.edgecolor : lightgrey
 
 ## Axes
@@ -32,5 +32,5 @@ lines.linewidth : 3
 lines.markeredgewidth : 0
 
 ## Figure
-figure.titlesize : large
+#figure.titlesize : large
 figure.figsize : 10, 6
