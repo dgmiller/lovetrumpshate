@@ -3,6 +3,17 @@ KEY
 D: Derek's notes
 K: Koa's notes
 
+=== 4 April ===
+
+--- D ---
+
+Decided Convo Neural Nets will take too much time that we don't have, although it will likely provide fruitful results.
+Instead, running Gaussian Process Classification, Voting Ensemble method, and Nearest Neighbors.
+
+--- d ---
+
+=== END ===
+
 === 14 March ===
 
 --- D ---
